@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script type="text/javascript">
+      function WebSocketTest() {
+
+        cerv = document.getElementById("cervesa");
+        id = cerv.selectedIndex;
+
+        select = cerv.options;
+
+         hoy = new Date();
+         dd = hoy.getDate();
+         mm = hoy.getMonth()+1;
+         yyyy = hoy.getFullYear();
+         fecha = dd + '/'+ mm + '/' +yyyy;
+
+        historial = document.getElementById("historial")
+        node =  document.createTextNode(`Marchando---${select[id].text}-----${fecha}`)
+        li = document.createElement("li");
+
+        var ws = new WebSocket(`ws://localhost:8000/ws?kind=${select[id].text}`);
+        if (ws != null && ws.readyState == WebSocket.OPEN) {
+          ws.send("Data from the client to the server!");
+        }
+                ws.onopen = function() {
+                    ws.send("Opening connection!");
+                };
+                ws.onmessage = function (evt) {
+                    var received_msg = evt.data;
+
+                    alert("Mensaje recibido... " + received_msg);
+                    li.appendChild(node);
+                    historial.appendChild(li);
+
+                };
+      };
+
+    </script>
+</head>
+<body>
+<div align="center">
+    <h1 align="center">Seleccione opcion</h1>
+    <select id="cervesa">
+        <option id="caña" name="caña">caña</option>
+        <option id="doble" name="doble">doble</option>
+        <option id="jarra" name="jarra">jarra</option>
+    </select>
+    <a href="javascript:WebSocketTest()">Marcha</a>
+</div>
+
+<div align="center">
+    <h1>Datos históricos</h1>
+    <ul id="historial"></ul>
+</div>
+
+</body>
+</html>
